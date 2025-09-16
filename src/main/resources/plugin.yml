@@ -1,0 +1,8 @@
+name: AntiCreative
+version: '1.0.0'
+main: io.github.tavstaldev.antiCreative.AntiCreative
+api-version: '1.21'
+prefix: AntiCreative
+authors: [ Zoltan 'Tavstal' Solymosi ]
+description: Simple anti creative mode plugin
+website: https://tavstaldev.github.io/
