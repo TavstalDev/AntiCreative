@@ -1,46 +1,74 @@
 package io.github.tavstaldev.antiCreative;
 
+import io.github.tavstaldev.antiCreative.listeners.PlayerEventListener;
+import io.github.tavstaldev.minecorelib.PluginBase;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.core.PluginTranslator;
+import io.github.tavstaldev.minecorelib.utils.VersionUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashSet;
-import java.util.Set;
+public class AntiCreative extends PluginBase {
+    public static AntiCreative Instance;
+    public static PluginLogger Logger() {
+        return Instance.getCustomLogger();
+    }
 
-public final class AntiCreative extends JavaPlugin implements Listener {
-    private String banCommand = "ban %player% You are not allowed to use creative mode!";
-    private final Set<String> allowedPlayers = new HashSet<>();
+    public static PluginTranslator Translator() {
+        return Instance.getTranslator();
+    }
+
+    public static AntiCreativeConfig Config() {
+        return (AntiCreativeConfig) Instance.getConfig();
+    }
+
+    public AntiCreative()  {
+        super(false, "https://github.com/TavstalDev/AntiCreative/releases/latest");
+    }
 
     @Override
     public void onEnable() {
-        allowedPlayers.addAll(this.getConfig().getStringList("allowed-players"));
-        banCommand = this.getConfig().getString("ban-command", banCommand);
-        this.getServer().getPluginManager().registerEvents(this, this);
+        Instance = this;
+        _logger.Info(String.format("Loading %s...", getProjectName()));
+        _config = new AntiCreativeConfig();
+        _config.load();
+        _translator = new PluginTranslator(this, new String[]{ "hun"});
+
+        if (VersionUtils.isLegacy()) {
+            _logger.Error("The plugin is not compatible with legacy versions of Minecraft. Please use a newer version of the game.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        // Register event listeners
+        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+
+        _logger.Ok(String.format("%s has been successfully loaded.", getProjectName()));
+        if (Config().checkForUpdates) {
+            isUpToDate().thenAccept(upToDate -> {
+                if (upToDate) {
+                    _logger.Ok("Plugin is up to date!");
+                } else {
+                    _logger.Warn("A new version of the plugin is available: " + getDownloadUrl());
+                }
+            }).exceptionally(e -> {
+                _logger.Error("Failed to determine update status: " + e.getMessage());
+                return null;
+            });
+        }
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        _logger.Info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
-    @EventHandler
-    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.getNewGameMode() != GameMode.CREATIVE)
-            return;
-
-        if (allowedPlayers.isEmpty())
-        {
-            this.getLogger().warning("No players are allowed to use creative mode. Please add players to the config file.");
-            return;
-        }
-
-        if (allowedPlayers.contains(event.getPlayer().getName()))
-            return;
-
-        String command = banCommand.replace("%player%", event.getPlayer().getName());
-        this.getServer().dispatchCommand(this.getServer().getConsoleSender(), command);
+    public void reload() {
+        _logger.Info(String.format("Reloading %s...", getProjectName()));
+        _logger.Debug("Reloading localizations...");
+        _translator.Load();
+        _logger.Debug("Localizations reloaded.");
+        _logger.Debug("Reloading configuration...");
+        _config.load();
+        _logger.Debug("Configuration reloaded.");
     }
 }
