@@ -7,24 +7,55 @@ import io.github.tavstaldev.minecorelib.core.PluginTranslator;
 import io.github.tavstaldev.minecorelib.utils.VersionUtils;
 import org.bukkit.Bukkit;
 
+/**
+ * Main class for the AntiCreative plugin.
+ * Extends the PluginBase class to provide core plugin functionality.
+ */
 public class AntiCreative extends PluginBase {
+    /**
+     * Singleton instance of the AntiCreative plugin.
+     */
     public static AntiCreative Instance;
+
+    /**
+     * Retrieves the custom logger for the plugin.
+     *
+     * @return The PluginLogger instance.
+     */
     public static PluginLogger Logger() {
         return Instance.getCustomLogger();
     }
 
+    /**
+     * Retrieves the translator for the plugin.
+     *
+     * @return The PluginTranslator instance.
+     */
     public static PluginTranslator Translator() {
         return Instance.getTranslator();
     }
 
+    /**
+     * Retrieves the configuration for the plugin.
+     *
+     * @return The AntiCreativeConfig instance.
+     */
     public static AntiCreativeConfig Config() {
         return (AntiCreativeConfig) Instance.getConfig();
     }
 
+    /**
+     * Constructor for the AntiCreative plugin.
+     * Initializes the plugin with the update URL.
+     */
     public AntiCreative()  {
         super(false, "https://github.com/TavstalDev/AntiCreative/releases/latest");
     }
 
+    /**
+     * Called when the plugin is enabled.
+     * Initializes the plugin, loads configuration, and registers event listeners.
+     */
     @Override
     public void onEnable() {
         Instance = this;
@@ -57,11 +88,19 @@ public class AntiCreative extends PluginBase {
         }
     }
 
+    /**
+     * Called when the plugin is disabled.
+     * Logs the unloading of the plugin.
+     */
     @Override
     public void onDisable() {
         _logger.Info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
+    /**
+     * Reloads the plugin's configuration and localizations.
+     * Logs the reloading process.
+     */
     public void reload() {
         _logger.Info(String.format("Reloading %s...", getProjectName()));
         _logger.Debug("Reloading localizations...");

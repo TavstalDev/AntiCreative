@@ -2,7 +2,6 @@ package io.github.tavstaldev.antiCreative.listeners;
 
 import io.github.tavstaldev.antiCreative.AntiCreative;
 import io.github.tavstaldev.antiCreative.utils.PlayerUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,7 +9,16 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+/**
+ * Listener class for handling player-related events in the AntiCreative plugin.
+ */
 public class PlayerEventListener implements Listener {
+
+    /**
+     * Handles the PlayerJoinEvent to enforce game mode restrictions.
+     *
+     * @param event The PlayerJoinEvent triggered when a player joins the server.
+     */
     @EventHandler
     public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
         if (PlayerUtil.isAllowed(event.getPlayer()))
@@ -28,6 +36,11 @@ public class PlayerEventListener implements Listener {
         }
     }
 
+    /**
+     * Handles the PlayerTeleportEvent to enforce game mode restrictions.
+     *
+     * @param event The PlayerTeleportEvent triggered when a player teleports.
+     */
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         if (PlayerUtil.isAllowed(event.getPlayer()))
@@ -45,6 +58,11 @@ public class PlayerEventListener implements Listener {
         }
     }
 
+    /**
+     * Handles the PlayerChangedWorldEvent to enforce game mode restrictions.
+     *
+     * @param event The PlayerChangedWorldEvent triggered when a player changes worlds.
+     */
     @EventHandler
     public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
         if (PlayerUtil.isAllowed(event.getPlayer()))
@@ -62,6 +80,11 @@ public class PlayerEventListener implements Listener {
         }
     }
 
+    /**
+     * Handles the PlayerGameModeChangeEvent to enforce game mode restrictions.
+     *
+     * @param event The PlayerGameModeChangeEvent triggered when a player attempts to change their game mode.
+     */
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         if (event.getNewGameMode() != GameMode.CREATIVE)

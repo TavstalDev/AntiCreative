@@ -30,20 +30,20 @@ public class AntiCreativeConfig extends ConfigurationBase {
 
 
         // General
-        resolve("locale", "hun");
+        resolve("locale", "eng");
         resolve("usePlayerLocale", false);
         checkForUpdates = resolveGet("checkForUpdates", false);
         debug = resolveGet("debug", false);
         prefix = resolveGet("prefix", "&cAnti&eCreative &8»");
 
-        banCommand = resolveGet("ban-command", "litebans:ban %player% 30d Nem használhatod a kreatív módot!");
+        banCommand = resolveGet("ban-command", "litebans:ban %player% 30d You were banned for being in creative mode.");
 
         banOnGamemodeChange = resolveGet("ban.on-gamemode-change", true);
         banOnWorldChange = resolveGet("ban.on-world-change", false);
         banOnJoin = resolveGet("ban.on-join", false);
         banOnTeleport = resolveGet("ban.on-teleport", false);
 
-        var list = resolveGet("allowed-players", List.of("Tavstal", "Aron", "ittvanfera", "Krstf01"));
+        var list = resolveGet("allowed-players", List.of("Steve", "Alex"));
         allowedPlayers.clear(); // on reload: clear the set first
         allowedPlayers.addAll(list);
         list = resolveGet("disabled-worlds", List.of("world_events"));
