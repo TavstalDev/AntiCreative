@@ -1,13 +1,12 @@
 package io.github.tavstaldev.antiCreative.listeners;
 
 import io.github.tavstaldev.antiCreative.AntiCreative;
+import io.github.tavstaldev.antiCreative.utils.ItemUtil;
 import io.github.tavstaldev.antiCreative.utils.PlayerUtil;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 
 /**
  * Listener class for handling player-related events in the AntiCreative plugin.
@@ -20,7 +19,7 @@ public class PlayerEventListener implements Listener {
      * @param event The PlayerJoinEvent triggered when a player joins the server.
      */
     @EventHandler
-    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         if (PlayerUtil.isAllowed(event.getPlayer()))
             return;
 
@@ -29,9 +28,9 @@ public class PlayerEventListener implements Listener {
 
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            AntiCreative.Logger().Warn("Player " + event.getPlayer().getName() + " was in creative mode on join. Changed to survival.");
+            AntiCreative.logger().warn("Player " + event.getPlayer().getName() + " was in creative mode on join. Changed to survival.");
 
-            if (AntiCreative.Config().banOnJoin)
+            if (AntiCreative.config().antiCreativeBanOnJoin)
                 PlayerUtil.banPlayer(event.getPlayer());
         }
     }
@@ -51,9 +50,9 @@ public class PlayerEventListener implements Listener {
 
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            AntiCreative.Logger().Warn("Player " + event.getPlayer().getName() + " was in creative mode on teleport. Changed to survival.");
+            AntiCreative.logger().warn("Player " + event.getPlayer().getName() + " was in creative mode on teleport. Changed to survival.");
 
-            if (AntiCreative.Config().banOnTeleport)
+            if (AntiCreative.config().antiCreativeBanOnTeleport)
                 PlayerUtil.banPlayer(event.getPlayer());
         }
     }
@@ -73,9 +72,9 @@ public class PlayerEventListener implements Listener {
 
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            AntiCreative.Logger().Warn("Player " + event.getPlayer().getName() + " was in creative mode on world change. Changed to survival.");
+            AntiCreative.logger().warn("Player " + event.getPlayer().getName() + " was in creative mode on world change. Changed to survival.");
 
-            if (AntiCreative.Config().banOnWorldChange)
+            if (AntiCreative.config().antiCreativeBanOnWorldChange)
                 PlayerUtil.banPlayer(event.getPlayer());
         }
     }
@@ -100,7 +99,39 @@ public class PlayerEventListener implements Listener {
         // Make sure the player is in survival mode
         event.getPlayer().setGameMode(GameMode.SURVIVAL);
 
-        if (AntiCreative.Config().banOnGamemodeChange)
+        if (AntiCreative.config().antiCreativeBanOnGamemodeChange)
             PlayerUtil.banPlayer(event.getPlayer());
     }
+
+    /**
+     * Handles the PlayerInteractEvent to prevent certain interactions based on the plugin's anti-abuse configuration.
+     * <br
+     * This method enforces restrictions on player interactions, such as opening containers or using blacklisted items,
+     * if the anti-abuse feature is enabled in the plugin's configuration. Players with the bypass permission are exempt
+     * from these restrictions.
+     *
+     * @param event The PlayerInteractEvent triggered when a player interacts with an object or item.
+     */
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        // Retrieve the plugin's configuration
+        var config = AntiCreative.config();
+
+        // Check if anti-abuse is disabled or if the player has the bypass permission
+        if (!config.antiAbuseEnabled || event.getPlayer().hasPermission(config.antiAbuseBypassPermission))
+            return;
+
+        // Prevent players from opening containers if the feature is enabled and the clicked block is a container
+        if (event.getClickedBlock() != null && config.antiAbusePreventOpeningContainers && ItemUtil.isContainer(event.getClickedBlock().getType())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Prevent players from interacting with blacklisted items
+        if (event.getItem() != null && config.antiAbuseInteractionBlacklist.contains(event.getItem().getType())) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
 }

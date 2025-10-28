@@ -15,7 +15,7 @@ public class PlayerUtil {
      * @return True if the player is in the allowed players list, false otherwise.
      */
     public static boolean isAllowed(Player player) {
-        return AntiCreative.Config().allowedPlayers.contains(player.getName());
+        return AntiCreative.config().antiCreativeAllowedPlayers.contains(player.getName());
     }
 
     /**
@@ -25,7 +25,7 @@ public class PlayerUtil {
      * @return True if the player's world is in the disabled worlds list, false otherwise.
      */
     public static boolean isInDisabledWorld(Player player) {
-        return AntiCreative.Config().disabledWorlds.contains(player.getWorld().getName());
+        return AntiCreative.config().antiCreativeDisabledWorlds.contains(player.getWorld().getName());
     }
 
     /**
@@ -34,8 +34,8 @@ public class PlayerUtil {
      * @param player The player to ban.
      */
     public static void banPlayer(Player player) {
-        final String command = AntiCreative.Config().banCommand.replace("%player%", player.getName());
-        AntiCreative.Logger().Info("Executing ban command: " + command);
+        final String command = AntiCreative.config().antiCreativeBanCommand.replace("%player%", player.getName());
+        AntiCreative.logger().info("Executing ban command: " + command);
         AntiCreative.Instance.getServer().dispatchCommand(AntiCreative.Instance.getServer().getConsoleSender(), command);
     }
 }
