@@ -47,7 +47,7 @@ public class AntiCreativeConfig extends ConfigurationBase {
         resolve("usePlayerLocale", false);
         checkForUpdates = resolveGet("checkForUpdates", false);
         debug = resolveGet("debug", false);
-        prefix = resolveGet("prefix", "&cAnti&eCreative &8»");
+        prefix = resolveGet("prefix", "&bAnti&3Creative &8»");
 
         //# region Anti creative
         antiCreativeEnabled = resolveGet("anti-creative.enabled", false);
